@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import edify_generator
 import os
+import fnmatch
 import subprocess
 import string
 from optparse import OptionParser
@@ -232,7 +233,11 @@ def main():
         f.write('       write_raw_image("/tmp/logo.img", "logo"),\n')
         f.write('       delete("/tmp/logo.img"));\n')
         f.write('show_progress(0.180000, 20);\n')
-        f.write('assert(package_extract_file("uImage-2.6.34", "/tmp/boot.img"),\n')
+        kernel = "uImage-2.6.34" # fallback
+        for file in os.listdir(options.path + "/../../"):
+          if fnmatch.fnmatch(file, 'uImage-*'):
+            kernel = file
+        f.write('assert(package_extract_file("%s", "/tmp/boot.img"),\n' % kernel)
         f.write('    write_raw_image("/tmp/boot.img", "boot"),\n')
         f.write('    delete("/tmp/boot.img"));\n')
         f.write('show_progress(0.020000, 0);\n')
